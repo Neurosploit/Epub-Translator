@@ -1,7 +1,7 @@
 __author__ = 'sha256'
 
 import threading
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 
 class ThreadedConvert(threading.Thread):
@@ -17,10 +17,10 @@ class ThreadedConvert(threading.Thread):
         if self._callback:
             self._callback.update_state("start")
         itemhtml = self._file.open(str(self._item))
-        soup = BeautifulSoup(itemhtml)
+        soup = BeautifulSoup(itemhtml,  'html.parser')
         converted = self._processor.get_converted_html(soup)
         self._file.writestr(self._item, converted)
-        soup.close()
+        # soup.close()
         itemhtml.close()
         if self._callback:
             self._callback.update_state("finish")

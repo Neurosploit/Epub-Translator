@@ -1,11 +1,11 @@
 __author__ = 'sha256'
 
-from BeautifulSoup import BeautifulSoup, NavigableString
-from zipfile import ZipFile, ZIP_DEFLATED
+from bs4 import BeautifulSoup, NavigableString
+from epubtranslator.updatablezipfile import UpdateableZipFile
+from zipfile import ZIP_DEFLATED
 import re
 import shutil
-from threadedconvert import ThreadedConvert
-
+from epubtranslator.threadedconvert import ThreadedConvert
 
 class ConversionEngine(object):
 
@@ -26,24 +26,25 @@ class BookProcessor(object):
     def get_html_files_ref(self):
         htmlfiles = []
 
-        with ZipFile(self._filepath, 'r') as f:
+        with UpdateableZipFile(self._filepath, 'r') as f:
             foo = f.open('META-INF/container.xml')
-            soup = BeautifulSoup(foo)
+            print(foo)
+            soup = BeautifulSoup(foo, 'html.parser')
             foo.close()
             contentfile = dict(soup.find('rootfile').attrs)['full-path']
-            soup.close()
+            # soup.close()
 
             root = re.sub(r'[^/]*(.opf)', '', contentfile)
 
             foo = f.open(contentfile)
-            soup = BeautifulSoup(foo)
+            soup = BeautifulSoup(foo, 'html.parser')
             for item in soup.findAll('item'):
                 itemdict = dict(item.attrs)
                 if itemdict['href'].endswith('html'):
                     htmlfiles.append(root + itemdict['href'])
 
             foo.close()
-            soup.close()
+            # soup.close()
             f.close()
 
         return htmlfiles
@@ -65,7 +66,7 @@ class BookProcessor(object):
                 converted = self._conversion_engine.convert(text)
                 nstring.replaceWith(converted)
 
-        return str(soup)
+        return str.encode(str(soup))
 
     def convert(self):
 
@@ -79,7 +80,7 @@ class BookProcessor(object):
         if self._callback:
             self._callback.update_state("total", len(htmls))
 
-        with ZipFile(self._destfile, 'a', ZIP_DEFLATED) as f:
+        with UpdateableZipFile(self._destfile, 'a', ZIP_DEFLATED) as f:
             threads = []
             for item in htmls:
                 t = ThreadedConvert(self, item, f, self._callback)

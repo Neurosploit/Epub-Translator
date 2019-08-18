@@ -1,6 +1,6 @@
 __author__ = 'sha256'
 
-from bookprocessor import BookProcessor, ConversionEngine
+from epubtranslator.bookprocessor import ConversionEngine, BookProcessor
 
 
 class ProgressCallback(object):
@@ -25,6 +25,7 @@ class SimpleConversionEngine(ConversionEngine):
 
     def convert(self, text):
         # conversion logic here
+        #return text.lower()
         return text
 
 
@@ -32,5 +33,5 @@ if __name__ == "__main__":
 
     e = SimpleConversionEngine()
     u = BookProcessor(e, progress_callback=ProgressCallback())
-    u.set_file("../input.epub", "../output.epub")
+    u.set_file("../EpubIn/input.epub", "../EpubOut/output.epub")
     u.convert()

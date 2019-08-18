@@ -27,7 +27,7 @@ All texts inside `<p>`, `<div>` etc tags are passed to `convert()` method, Text 
 
 Requirements
 ----
-BeautifulSoup 3
+BeautifulSoup 4
 
 
 

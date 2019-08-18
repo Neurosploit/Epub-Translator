@@ -5,3 +5,6 @@ log.txt
 *.iml
 build/
 dist/
+EpubIn
+EpubOut
+/.vs
