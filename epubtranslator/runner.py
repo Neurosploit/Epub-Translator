@@ -30,6 +30,7 @@ class SimpleConversionEngine(ConversionEngine):
         self.cognitiveServiceUrl = 'https://api.cognitive.microsoft.com/sts/v1.0/issueToken'
         self.translateUrl = 'https://api.cognitive.microsofttranslator.com/'
         self.maxTextLength = 5000  # limit on max characters at same time from single api call.
+		self.rateLimitLength = 33000 # when rate limit kicks in.
         # create a file yourself with the azure congnitive api key in it on a single line.
         with open('azurecognitiveapi.key', 'r') as myfile:
             self.subscriptionKey = myfile.read()
@@ -39,7 +40,7 @@ class SimpleConversionEngine(ConversionEngine):
         # conversion logic here
         # to not hit rate limit sleep 60 seconds before continuing
          print('trying to convert '+ text)
-         if((self.currentMinuteCharactersConverted + len(text)) >= 33000):
+         if((self.currentMinuteCharactersConverted + len(text)) >= self.rateLimitLength):
              print('sleeping')
              time.sleep(60)
              self.sleepCount +=1
@@ -53,7 +54,7 @@ class SimpleConversionEngine(ConversionEngine):
          self.currentMinuteCharactersConverted += len(text)
          self.totaltextsize += len(text)
 
-         if(len(text) >= 5000):
+         if(len(text) >= self.maxTextLength):
              print('detected splits')
              translatedText = ''
              splits = self.splitText(text)
