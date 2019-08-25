@@ -8,3 +8,4 @@ dist/
 EpubIn
 EpubOut
 /.vs
+/epubtranslator/azurecognitiveapi.key

@@ -9,7 +9,7 @@ from epubtranslator.threadedconvert import ThreadedConvert
 
 class ConversionEngine(object):
 
-    def convert(self, text):
+    def convert(self, text, fromlang, tolang):
         raise NotImplementedError("Conversion Engine must be subclassed")
 
 
@@ -19,9 +19,11 @@ class BookProcessor(object):
         self._conversion_engine = conversion_engine
         self._callback = progress_callback
 
-    def set_file(self, src_file, dest_file=None):
+    def set_file(self, src_file, dest_file, fromlang, tolang):
         self._filepath = src_file
         self._destfile = dest_file
+        self.fromlang = fromlang
+        self.tolang = tolang
 
     def get_html_files_ref(self):
         htmlfiles = []
@@ -50,7 +52,6 @@ class BookProcessor(object):
         return htmlfiles
 
     def get_converted_html(self, soup):
-
         for nstring in soup.findAll(text=True):
 
             if type(nstring) is not NavigableString:
@@ -63,7 +64,7 @@ class BookProcessor(object):
             text = str(nstring).strip()
 
             if text:
-                converted = self._conversion_engine.convert(text)
+                converted = self._conversion_engine.convert(text, self.fromlang, self.tolang)
                 nstring.replaceWith(converted)
 
         return str.encode(str(soup))
